@@ -62,8 +62,7 @@ public_gitlab_block = GitLab(
 public_gitlab_block.save()
 
 
-# specific branch or tag of a repository
-# public GitLab repository
+# specific branch or tag of a GitLab repository
 branch_gitlab_block = GitLab(
     name="my-gitlab-block",
     reference="branch-or-tag-name"
