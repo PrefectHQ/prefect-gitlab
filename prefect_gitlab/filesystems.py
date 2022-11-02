@@ -1,4 +1,45 @@
-"""This is an example blocks module"""
+"""
+Integrations with GitLab.
+
+The `GitLab` class in this collection is a storage block that lets Prefect agents
+pull Prefect flow code from GitLab repositories.
+
+The `GitLab` block is ideally configured via the Prefect UI, but can also be used 
+in Python as the following examples demonstrate.
+
+Examples:
+```python
+    from prefect_gitlab.filesystems import GitLab
+
+    # public GitLab repository
+    public_gitlab_block = GitLab(
+        name="my-gitlab-block",
+        repository="https://gitlab.com/testing/my-repository.git"
+    )
+
+    public_gitlab_block.save()
+
+
+    # specific branch or tag of a GitLab repository
+    branch_gitlab_block = GitLab(
+        name="my-gitlab-block",
+        reference="branch-or-tag-name"
+        repository="https://gitlab.com/testing/my-repository.git"
+    )
+
+    branch_gitlab_block.save()
+
+
+    # private GitLab repository
+    private_gitlab_block = GitLab(
+        name="my-private-gitlab-block",
+        repository="https://gitlab.com/testing/my-repository.git",
+        access_token="YOUR_GITLAB_PERSONAL_ACCESS_TOKEN"
+    )
+
+    private_gitlab_block.save()
+```
+"""
 import io
 import urllib.parse
 from distutils.dir_util import copy_tree
