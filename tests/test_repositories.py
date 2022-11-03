@@ -91,7 +91,7 @@ class TestGitLab:
         assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
 
     async def test_token_added_correctly_from_credential(self, monkeypatch):
-        """Ensure that the repo url is in the format `https://<oauth-key>@github.com/<username>/<repo>.git`."""  # noqa: E501
+        """Ensure that the repo url is in the format `https://<oauth-key>@gitlab.com/<username>/<repo>.git`."""  # noqa: E501
 
         class p:
             returncode = 0
@@ -127,7 +127,7 @@ class TestGitLab:
         monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
         credential = "XYZ"
         error_msg = (
-            "Crendentials can only be used with GitHub repositories "
+            "Credentials can only be used with GitLab repositories "
             "using the 'HTTPS' format. You must either remove the "
             "credential if you wish to use the 'SSH' format and are not "
             "using a private repository, or you must change the repository "
@@ -135,7 +135,7 @@ class TestGitLab:
         )
         with pytest.raises(InvalidRepositoryURLError, match=error_msg):
             GitLabRepository(
-                repository="git@github.com:PrefectHQ/prefect.git",
+                repository="git@gitlab.com:PrefectHQ/prefect.git",
                 access_token=SecretStr(credential),
             )
 
@@ -167,7 +167,7 @@ class TestGitLab:
                 )
 
                 g = GitLabRepository(
-                    repository="https://github.com/PrefectHQ/prefect.git",
+                    repository="https://gitlab.com/PrefectHQ/prefect.git",
                 )
                 await g.get_directory(local_path=tmp_dst)
 
@@ -206,7 +206,7 @@ class TestGitLab:
                 )
 
                 g = GitLabRepository(
-                    repository="https://github.com/PrefectHQ/prefect.git",
+                    repository="https://gitlab.com/PrefectHQ/prefect.git",
                 )
                 await g.get_directory(local_path=tmp_dst, from_path=sub_dir_name)
 

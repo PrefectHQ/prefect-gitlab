@@ -67,6 +67,7 @@ class GitLabRepository(ReadableDeploymentStorage):
         url="https://images.ctfassets.net/gm98wzqotmnx/55edIimT4g9gbjhkh5a3Sp/dfdb9391d8f45c2e93e72e3a4d350771/gitlab-logo-500.png?h=250",  # noqa
         scheme="https",
     )
+    _description = "Interact with files stored in GitLab repositories."
 
     repository: str = Field(
         default=...,
@@ -94,7 +95,7 @@ class GitLabRepository(ReadableDeploymentStorage):
             if urllib.parse.urlparse(values["repository"]).scheme != "https":
                 raise InvalidRepositoryURLError(
                     (
-                        "Credentials can only be used with GitHub repositories "
+                        "Credentials can only be used with GitLab repositories "
                         "using the 'HTTPS' format. You must either remove the "
                         "credential if you wish to use the 'SSH' format and are not "
                         "using a private repository, or you must change the repository "
@@ -106,7 +107,7 @@ class GitLabRepository(ReadableDeploymentStorage):
 
     def _create_repo_url(self) -> str:
         """Format the URL provided to the `git clone` command.
-        For private repos: https://<oauth-key>@github.com/<username>/<repo>.git
+        For private repos: https://<oauth-key>@gitlab.com/<username>/<repo>.git
         All other repos should be the same as `self.repository`.
         """
         url_components = urllib.parse.urlparse(self.repository)
@@ -125,7 +126,7 @@ class GitLabRepository(ReadableDeploymentStorage):
     def _get_paths(
         dst_dir: Union[str, None], src_dir: str, sub_directory: Optional[str]
     ) -> Tuple[str, str]:
-        """Returns the fully formed paths for GitHubRepository contents in the form
+        """Returns the fully formed paths for GitLabRepository contents in the form
         (content_source, content_destination).
         """
         if dst_dir is None:
@@ -146,7 +147,7 @@ class GitLabRepository(ReadableDeploymentStorage):
         self, from_path: Optional[str] = None, local_path: Optional[str] = None
     ) -> None:
         """
-        Clones a GitHub project specified in `from_path` to the provided `local_path`;
+        Clones a GitLab project specified in `from_path` to the provided `local_path`;
         defaults to cloning the repository reference configured on the Block to the
         present working directory.
         Args:
