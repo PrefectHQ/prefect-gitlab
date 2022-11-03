@@ -48,5 +48,5 @@ watch:
 
 nav:
     - Home: index.md
-    - File Systems: filesystems.md
+    - Repositories: repositories.md
 

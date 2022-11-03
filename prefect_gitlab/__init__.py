@@ -1,4 +1,5 @@
 from . import _version
-from .filesystems import GitLab  # noqa
+from .repositories import GitLabRepository
 
 __version__ = _version.get_versions()["version"]
+__all__ = ["GitLabRepository"]

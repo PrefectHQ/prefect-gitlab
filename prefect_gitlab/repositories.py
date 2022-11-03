@@ -9,10 +9,10 @@ in Python as the following examples demonstrate.
 
 Examples:
 ```python
-    from prefect_gitlab.filesystems import GitLab
+    from prefect_gitlab.repositories import GitLabRepository
 
     # public GitLab repository
-    public_gitlab_block = GitLab(
+    public_gitlab_block = GitLabRepository(
         name="my-gitlab-block",
         repository="https://gitlab.com/testing/my-repository.git"
     )
@@ -21,7 +21,7 @@ Examples:
 
 
     # specific branch or tag of a GitLab repository
-    branch_gitlab_block = GitLab(
+    branch_gitlab_block = GitLabRepository(
         name="my-gitlab-block",
         reference="branch-or-tag-name"
         repository="https://gitlab.com/testing/my-repository.git"
@@ -31,7 +31,7 @@ Examples:
 
 
     # private GitLab repository
-    private_gitlab_block = GitLab(
+    private_gitlab_block = GitLabRepository(
         name="my-private-gitlab-block",
         repository="https://gitlab.com/testing/my-repository.git",
         access_token="YOUR_GITLAB_PERSONAL_ACCESS_TOKEN"
@@ -54,12 +54,15 @@ from prefect.utilities.processutils import run_process
 from pydantic import Field, HttpUrl, SecretStr, validator
 
 
-class GitLab(ReadableDeploymentStorage):
+class GitLabRepository(ReadableDeploymentStorage):
     """
     Interact with files stored in GitLab repositories.
+
+    An accessible installation of git is required for this block to function
+    properly.
     """
 
-    _block_type_name = "GitLab"
+    _block_type_name = "GitLab Repository"
     _logo_url = HttpUrl(
         url="https://images.ctfassets.net/gm98wzqotmnx/55edIimT4g9gbjhkh5a3Sp/dfdb9391d8f45c2e93e72e3a4d350771/gitlab-logo-500.png?h=250",  # noqa
         scheme="https",
@@ -91,7 +94,7 @@ class GitLab(ReadableDeploymentStorage):
             if urllib.parse.urlparse(values["repository"]).scheme != "https":
                 raise InvalidRepositoryURLError(
                     (
-                        "Crendentials can only be used with GitHub repositories "
+                        "Credentials can only be used with GitHub repositories "
                         "using the 'HTTPS' format. You must either remove the "
                         "credential if you wish to use the 'SSH' format and are not "
                         "using a private repository, or you must change the repository "
