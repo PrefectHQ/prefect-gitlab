@@ -21,8 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.1.0
 
-Released on ????? ?th, 20??.
+Released on November 2nd, 2022.
 
 ### Added
 
-- `task_name` task - [#1](https://github.com/prefecthq/prefect-gitlab/pull/1)
+- `GitLabRepository` block - [#1](https://github.com/prefecthq/prefect-gitlab/pull/1)
