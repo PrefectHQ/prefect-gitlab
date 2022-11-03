@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `GitLabRepository` block
+- `GitLabRepository` block - [#1](https://github.com/PrefectHQ/prefect-gitlab)
 - `GitLabCredentials` block - [#1](https://github.com/PrefectHQ/prefect-gitlab)
 
 ### Changed

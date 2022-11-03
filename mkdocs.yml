@@ -48,5 +48,6 @@ watch:
 
 nav:
     - Home: index.md
+    - Credentials: credentials.md
     - Repositories: repositories.md
 
