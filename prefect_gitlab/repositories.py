@@ -51,7 +51,9 @@ from prefect.exceptions import InvalidRepositoryURLError
 from prefect.filesystems import ReadableDeploymentStorage
 from prefect.utilities.asyncutils import sync_compatible
 from prefect.utilities.processutils import run_process
-from pydantic import Field, HttpUrl, SecretStr, validator
+from pydantic import Field, HttpUrl, validator
+
+from prefect_gitlab.credentials import GitLabCredentials
 
 
 class GitLabRepository(ReadableDeploymentStorage):
@@ -79,13 +81,13 @@ class GitLabRepository(ReadableDeploymentStorage):
         default=None,
         description="An optional reference to pin to; can be a branch name or tag.",
     )
-    access_token: Optional[SecretStr] = Field(
-        name="Personal Access Token",
+    credentials: Optional[GitLabCredentials] = Field(
         default=None,
-        description="A GitLab Personal Access Token (PAT) with repo scope.",
+        description="An optional GitLab Credentials block for authenticating with "
+        "private GitLab repos.",
     )
 
-    @validator("access_token")
+    @validator("credentials")
     def _ensure_credentials_go_with_https(cls, v: str, values: dict) -> str:
         """Ensure that credentials are not provided with 'SSH' formatted GitLub URLs.
         Note: validates `access_token` specifically so that it only fires when
@@ -111,8 +113,8 @@ class GitLabRepository(ReadableDeploymentStorage):
         All other repos should be the same as `self.repository`.
         """
         url_components = urllib.parse.urlparse(self.repository)
-        if url_components.scheme == "https" and self.access_token is not None:
-            token = self.access_token.get_secret_value()
+        if url_components.scheme == "https" and self.credentials is not None:
+            token = self.credentials.token.get_secret_value()
             updated_components = url_components._replace(
                 netloc=f"oauth2:{token}@{url_components.netloc}"
             )

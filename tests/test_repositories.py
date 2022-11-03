@@ -9,6 +9,7 @@ from prefect.testing.utilities import AsyncMock
 from pydantic import SecretStr
 
 import prefect_gitlab
+from prefect_gitlab.credentials import GitLabCredentials
 from prefect_gitlab.repositories import GitLabRepository
 
 
@@ -102,7 +103,7 @@ class TestGitLab:
         repo = "https://gitlab.com/PrefectHQ/prefect.git"
         g = GitLabRepository(
             repository=repo,
-            access_token=SecretStr(credential),
+            credentials=GitLabCredentials(token=SecretStr(credential)),
         )
         await g.get_directory()
         assert mock.await_count == 1
@@ -136,7 +137,7 @@ class TestGitLab:
         with pytest.raises(InvalidRepositoryURLError, match=error_msg):
             GitLabRepository(
                 repository="git@gitlab.com:PrefectHQ/prefect.git",
-                access_token=SecretStr(credential),
+                credentials=GitLabCredentials(token=SecretStr(credential)),
             )
 
     async def test_dir_contents_copied_correctly_with_get_directory(
