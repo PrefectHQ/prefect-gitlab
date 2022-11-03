@@ -41,7 +41,7 @@ pip install prefect-gitlab
 Then, register to [view the storage block](https://orion-docs.prefect.io/ui/blocks/) on Prefect Cloud:
 
 ```bash
-prefect block register -m prefect_gitlab.filesystems
+prefect block register -m prefect_gitlab
 ```
 
 Note, to use the `load` method on Blocks, you must already have a block document [saved through code](https://orion-docs.prefect.io/concepts/blocks/#saving-blocks) or [saved through the UI](https://orion-docs.prefect.io/ui/blocks/).
@@ -51,10 +51,10 @@ Note, to use the `load` method on Blocks, you must already have a block document
 ### In Python
 
 ```python
-from prefect_gitlab.filesystems import GitLab
+from prefect_gitlab import GitLabRepository
 
 # public GitLab repository
-public_gitlab_block = GitLab(
+public_gitlab_block = GitLabRepository(
     name="my-gitlab-block",
     repository="https://gitlab.com/testing/my-repository.git"
 )
@@ -63,7 +63,7 @@ public_gitlab_block.save()
 
 
 # specific branch or tag of a GitLab repository
-branch_gitlab_block = GitLab(
+branch_gitlab_block = GitLabRepository(
     name="my-gitlab-block",
     reference="branch-or-tag-name"
     repository="https://gitlab.com/testing/my-repository.git"
@@ -73,7 +73,7 @@ branch_gitlab_block.save()
 
 
 # private GitLab repository
-private_gitlab_block = GitLab(
+private_gitlab_block = GitLabRepository(
     name="my-private-gitlab-block",
     repository="https://gitlab.com/testing/my-repository.git",
     access_token="YOUR_GITLAB_PERSONAL_ACCESS_TOKEN"

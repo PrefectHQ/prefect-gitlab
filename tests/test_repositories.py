@@ -9,7 +9,8 @@ from prefect.testing.utilities import AsyncMock
 from pydantic import SecretStr
 
 import prefect_gitlab
-from prefect_gitlab.filesystems import GitLab
+from prefect_gitlab.credentials import GitLabCredentials
+from prefect_gitlab.repositories import GitLabRepository
 
 
 class TestGitLab:
@@ -58,7 +59,7 @@ class TestGitLab:
             pass
 
     async def test_subprocess_errors_are_surfaced(self):
-        g = GitLab(repository="incorrect-url-scheme")
+        g = GitLabRepository(repository="incorrect-url-scheme")
         with pytest.raises(
             OSError, match="fatal: repository 'incorrect-url-scheme' does not exist"
         ):
@@ -69,8 +70,8 @@ class TestGitLab:
             returncode = 0
 
         mock = AsyncMock(return_value=p())
-        monkeypatch.setattr(prefect_gitlab.filesystems, "run_process", mock)
-        g = GitLab(repository="prefect")
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
+        g = GitLabRepository(repository="prefect")
         await g.get_directory()
 
         assert mock.await_count == 1
@@ -82,8 +83,8 @@ class TestGitLab:
             returncode = 0
 
         mock = AsyncMock(return_value=p())
-        monkeypatch.setattr(prefect_gitlab.filesystems, "run_process", mock)
-        g = GitLab(repository="prefect", reference="2.0.0")
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
+        g = GitLabRepository(repository="prefect", reference="2.0.0")
         await g.get_directory()
 
         assert mock.await_count == 1
@@ -91,18 +92,18 @@ class TestGitLab:
         assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
 
     async def test_token_added_correctly_from_credential(self, monkeypatch):
-        """Ensure that the repo url is in the format `https://<oauth-key>@github.com/<username>/<repo>.git`."""  # noqa: E501
+        """Ensure that the repo url is in the format `https://<oauth-key>@gitlab.com/<username>/<repo>.git`."""  # noqa: E501
 
         class p:
             returncode = 0
 
         mock = AsyncMock(return_value=p())
-        monkeypatch.setattr(prefect_gitlab.filesystems, "run_process", mock)
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
         credential = "XYZ"
         repo = "https://gitlab.com/PrefectHQ/prefect.git"
-        g = GitLab(
+        g = GitLabRepository(
             repository=repo,
-            access_token=SecretStr(credential),
+            credentials=GitLabCredentials(token=SecretStr(credential)),
         )
         await g.get_directory()
         assert mock.await_count == 1
@@ -124,19 +125,19 @@ class TestGitLab:
             returncode = 0
 
         mock = AsyncMock(return_value=p())
-        monkeypatch.setattr(prefect_gitlab.filesystems, "run_process", mock)
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
         credential = "XYZ"
         error_msg = (
-            "Crendentials can only be used with GitHub repositories "
+            "Credentials can only be used with GitLab repositories "
             "using the 'HTTPS' format. You must either remove the "
             "credential if you wish to use the 'SSH' format and are not "
             "using a private repository, or you must change the repository "
             "URL to the 'HTTPS' format."
         )
         with pytest.raises(InvalidRepositoryURLError, match=error_msg):
-            GitLab(
-                repository="git@github.com:PrefectHQ/prefect.git",
-                access_token=SecretStr(credential),
+            GitLabRepository(
+                repository="git@gitlab.com:PrefectHQ/prefect.git",
+                credentials=GitLabCredentials(token=SecretStr(credential)),
             )
 
     async def test_dir_contents_copied_correctly_with_get_directory(
@@ -148,7 +149,7 @@ class TestGitLab:
             returncode = 0
 
         mock = AsyncMock(return_value=p())
-        monkeypatch.setattr(prefect_gitlab.filesystems, "run_process", mock)
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
 
         sub_dir_name = "puppy"
 
@@ -161,13 +162,13 @@ class TestGitLab:
             # move file contents to tmp_dst
             with TemporaryDirectory() as tmp_dst:
                 monkeypatch.setattr(
-                    prefect_gitlab.filesystems,
+                    prefect_gitlab.repositories,
                     "TemporaryDirectory",
                     self.MockTmpDir,
                 )
 
-                g = GitLab(
-                    repository="https://github.com/PrefectHQ/prefect.git",
+                g = GitLabRepository(
+                    repository="https://gitlab.com/PrefectHQ/prefect.git",
                 )
                 await g.get_directory(local_path=tmp_dst)
 
@@ -187,7 +188,7 @@ class TestGitLab:
             returncode = 0
 
         mock = AsyncMock(return_value=p())
-        monkeypatch.setattr(prefect_gitlab.filesystems, "run_process", mock)
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
 
         sub_dir_name = "puppy"
 
@@ -200,13 +201,13 @@ class TestGitLab:
             # move file contents to tmp_dst
             with TemporaryDirectory() as tmp_dst:
                 monkeypatch.setattr(
-                    prefect_gitlab.filesystems,
+                    prefect_gitlab.repositories,
                     "TemporaryDirectory",
                     self.MockTmpDir,
                 )
 
-                g = GitLab(
-                    repository="https://github.com/PrefectHQ/prefect.git",
+                g = GitLabRepository(
+                    repository="https://gitlab.com/PrefectHQ/prefect.git",
                 )
                 await g.get_directory(local_path=tmp_dst, from_path=sub_dir_name)
 
