@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `GitLabRepository` block
+- `GitLabCredentials` block - [#1](https://github.com/PrefectHQ/prefect-gitlab)
+
 ### Changed
 
 ### Deprecated
@@ -21,8 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## 0.1.0
 
-Released on November 3nd, 2022.
+Released on ????? ?th, 20??.
 
 ### Added
 
-- `GitLabRepository` block - [#1](https://github.com/prefecthq/prefect-gitlab/pull/1)
+- `task_name` task - [#1](https://github.com/prefecthq/prefect-gitlab/pull/1)
