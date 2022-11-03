@@ -87,11 +87,11 @@ Click on the **Blocks** menu, then click the **+** button in the page header to 
 ![blocks menu](docs/img/blocks-menu.png)
 
 Then, find the **GitLab** block and click the **Add** button:
-![GitLab block catalog entry](docs/img/add-gitlab-block.png)
+![GitLab block catalog entry](docs/img/gitlab-blocks.png)
 
 
 Finally, enter your repository information in the form and click **Create**:
-![GitLab repository information form](docs/img/gitlab-block-form.png)
+![GitLab repository information form](docs/img/create-gitlab-repository.png)
 
 ## Resources
 
