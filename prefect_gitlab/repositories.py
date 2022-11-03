@@ -4,7 +4,7 @@ Integrations with GitLab.
 The `GitLab` class in this collection is a storage block that lets Prefect agents
 pull Prefect flow code from GitLab repositories.
 
-The `GitLab` block is ideally configured via the Prefect UI, but can also be used 
+The `GitLab` block is ideally configured via the Prefect UI, but can also be used
 in Python as the following examples demonstrate.
 
 Examples:
