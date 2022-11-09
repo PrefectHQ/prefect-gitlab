@@ -84,14 +84,14 @@ private_gitlab_block.save()
 
 ### In the UI
 Click on the **Blocks** menu, then click the **+** button in the page header to open the block catalog:
-![blocks menu](docs/img/blocks-menu.png)
+![blocks menu](https://github.com/PrefectHQ/prefect-gitlab/blob/main/docs/img/blocks-menu.png?raw=true)
 
 Then, find the **GitLab** block and click the **Add** button:
-![GitLab block catalog entry](docs/img/gitlab-blocks.png)
+![GitLab block catalog entry](https://github.com/PrefectHQ/prefect-gitlab/blob/main/docs/img/gitlab-blocks.png?raw=true)
 
 
 Finally, enter your repository information in the form and click **Create**:
-![GitLab repository information form](docs/img/create-gitlab-repository.png)
+![GitLab repository information form](https://github.com/PrefectHQ/prefect-gitlab/blob/main/docs/img/create-gitlab-repository.png?raw=true)
 
 ## Resources
 
