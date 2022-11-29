@@ -10,7 +10,7 @@ class GitLabCredentials(Block):
     repositories.
 
     Attributes:
-        token: The token to authenticate into GitLab.
+        token: personal access token to authenticate with GitLab.
 
     Examples:
         Load stored GitLab credentials:
@@ -29,5 +29,5 @@ class GitLabCredentials(Block):
     token: SecretStr = Field(
         name="Personal Access Token",
         default=None,
-        description="A GitLab Personal Access Token with repo scope.",
+        description="A GitLab Personal Access Token with read_repository scope.",
     )
