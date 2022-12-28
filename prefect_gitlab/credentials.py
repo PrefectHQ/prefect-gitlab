@@ -45,6 +45,6 @@ class GitLabCredentials(Block):
             An authenticated GitLab client.
         """
         # ref: https://python-gitlab.readthedocs.io/en/stable/
-        gitlab = Gitlab(url=self.url, oauth_token=self.token)
+        gitlab = Gitlab(url=self.url, oauth_token=self.token.get_secret_value())
         gitlab.auth()
         return gitlab
