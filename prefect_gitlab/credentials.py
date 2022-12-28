@@ -11,7 +11,7 @@ class GitLabCredentials(Block):
     repositories.
 
     Attributes:
-        token: The token to authenticate into GitLab.
+        token: The personal access token to authenticate with GitLab.
         url: URL to self-hosted GitLab instances.
 
     Examples:
@@ -31,7 +31,7 @@ class GitLabCredentials(Block):
     token: SecretStr = Field(
         name="Personal Access Token",
         default=None,
-        description="A GitLab Personal Access Token with repo scope.",
+        description="A GitLab Personal Access Token with read_repository scope.",
     )
     url: str = Field(
         default=None, title="URL", description="URL to self-hosted GitLab instances."
