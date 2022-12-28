@@ -2,6 +2,7 @@
 
 from prefect.blocks.core import Block
 from pydantic import Field, HttpUrl, SecretStr
+from gitlab import Gitlab
 
 
 class GitLabCredentials(Block):
@@ -31,3 +32,16 @@ class GitLabCredentials(Block):
         default=None,
         description="A GitLab Personal Access Token with repo scope.",
     )
+    url: str = Field(default=None, title="URL", description="URL to self-hosted GitLab instances.")
+
+    def get_client(self) -> Gitlab:
+        """
+        Gets an authenticated GitLab client.
+
+        Returns:
+            An authenticated GitLab client.
+        """
+        # ref: https://python-gitlab.readthedocs.io/en/stable/
+        gitlab = Gitlab(url=self.url, oauth_token=self.token)
+        gitlab.auth()
+        return gitlab
