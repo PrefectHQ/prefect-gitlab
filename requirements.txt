@@ -1,2 +1,2 @@
-prefect>=2.3.0
-pydantic
+prefect>=2.7.0
+python-gitlab>=3.12.0
