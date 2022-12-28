@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `get_client` method to `GitLabCredentials` - [#9](https://github.com/PrefectHQ/prefect-gitlab/pull/9)
+- `get_client` method and `url` field to `GitLabCredentials` - [#9](https://github.com/PrefectHQ/prefect-gitlab/pull/9)
 
 ### Changed
 
