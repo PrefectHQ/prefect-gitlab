@@ -12,6 +12,7 @@ class GitLabCredentials(Block):
 
     Attributes:
         token: The token to authenticate into GitLab.
+        url: URL to self-hosted GitLab instances.
 
     Examples:
         Load stored GitLab credentials:
