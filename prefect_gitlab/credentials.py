@@ -1,8 +1,8 @@
 """Module used to enable authenticated interactions with GitLab"""
 
+from gitlab import Gitlab
 from prefect.blocks.core import Block
 from pydantic import Field, HttpUrl, SecretStr
-from gitlab import Gitlab
 
 
 class GitLabCredentials(Block):
@@ -33,7 +33,9 @@ class GitLabCredentials(Block):
         default=None,
         description="A GitLab Personal Access Token with repo scope.",
     )
-    url: str = Field(default=None, title="URL", description="URL to self-hosted GitLab instances.")
+    url: str = Field(
+        default=None, title="URL", description="URL to self-hosted GitLab instances."
+    )
 
     def get_client(self) -> Gitlab:
         """

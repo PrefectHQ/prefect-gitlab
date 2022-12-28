@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock
-from prefect_gitlab.credentials import GitLabCredentials, Gitlab
+
+from prefect_gitlab.credentials import GitLabCredentials
 
 
 def test_gitlab_credentials_get_client(monkeypatch):
