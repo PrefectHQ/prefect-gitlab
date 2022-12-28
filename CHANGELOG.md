@@ -9,8 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `get_client` method to `GitLabCredentials` - [#5](https://github.com/PrefectHQ/prefect-gitlab/?????)
-
+- `get_client` method to `GitLabCredentials` - [#9](https://github.com/PrefectHQ/prefect-gitlab/pull/9)
 
 ### Changed
 
@@ -28,5 +27,5 @@ Released on November 3rd, 2022.
 
 ### Added
 
-- `GitLabRepository` block - [#1](https://github.com/PrefectHQ/prefect-gitlab)
-- `GitLabCredentials` block - [#1](https://github.com/PrefectHQ/prefect-gitlab)
+- `GitLabRepository` block - [#1](https://github.com/PrefectHQ/prefect-gitlab/pull/1)
+- `GitLabCredentials` block - [#1](https://github.com/PrefectHQ/prefect-gitlab/pull/1)
