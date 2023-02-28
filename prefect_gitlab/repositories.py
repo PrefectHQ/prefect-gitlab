@@ -74,7 +74,7 @@ class GitLabRepository(ReadableDeploymentStorage):
     repository: str = Field(
         default=...,
         description=(
-            "The URL of a GitLab repository to read from, in either HTTPS or SSH format."  # noqa
+            "The URL of a GitLab repository to read from, in either HTTP/HTTPS or SSH format."  # noqa
         ),
     )
     reference: Optional[str] = Field(
@@ -88,20 +88,20 @@ class GitLabRepository(ReadableDeploymentStorage):
     )
 
     @validator("credentials")
-    def _ensure_credentials_go_with_https(cls, v: str, values: dict) -> str:
+    def _ensure_credentials_go_with_http(cls, v: str, values: dict) -> str:
         """Ensure that credentials are not provided with 'SSH' formatted GitLub URLs.
         Note: validates `access_token` specifically so that it only fires when
         private repositories are used.
         """
         if v is not None:
-            if urllib.parse.urlparse(values["repository"]).scheme != "https":
+            if urllib.parse.urlparse(values["repository"]).scheme in ["https", "http"]:
                 raise InvalidRepositoryURLError(
                     (
                         "Credentials can only be used with GitLab repositories "
-                        "using the 'HTTPS' format. You must either remove the "
+                        "using the 'HTTPS'/'HTTP' format. You must either remove the "
                         "credential if you wish to use the 'SSH' format and are not "
                         "using a private repository, or you must change the repository "
-                        "URL to the 'HTTPS' format."
+                        "URL to the 'HTTPS'/'HTTP' format."
                     )
                 )
 
@@ -113,7 +113,7 @@ class GitLabRepository(ReadableDeploymentStorage):
         All other repos should be the same as `self.repository`.
         """
         url_components = urllib.parse.urlparse(self.repository)
-        if url_components.scheme == "https" and self.credentials is not None:
+        if url_components.scheme in ["https", "http"] and self.credentials is not None:
             token = self.credentials.token.get_secret_value()
             updated_components = url_components._replace(
                 netloc=f"oauth2:{token}@{url_components.netloc}"
