@@ -94,7 +94,7 @@ class GitLabRepository(ReadableDeploymentStorage):
         private repositories are used.
         """
         if v is not None:
-            if urllib.parse.urlparse(values["repository"]).scheme in ["https", "http"]:
+            if urllib.parse.urlparse(values["repository"]).scheme not in ["https", "http"]:
                 raise InvalidRepositoryURLError(
                     (
                         "Credentials can only be used with GitLab repositories "
