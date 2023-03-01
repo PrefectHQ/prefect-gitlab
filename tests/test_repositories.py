@@ -91,7 +91,7 @@ class TestGitLab:
         expected_cmd = ["git", "clone", "prefect", "-b", "2.0.0", "--depth", "1"]
         assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
 
-    async def test_token_added_correctly_from_credential(self, monkeypatch):
+    async def test_https_connection_with_token_added_correctly(self, monkeypatch):
         """Ensure that the repo url is in the format `https://<oauth-key>@gitlab.com/<username>/<repo>.git`."""  # noqa: E501
 
         class p:
@@ -111,6 +111,31 @@ class TestGitLab:
             "git",
             "clone",
             f"https://oauth2:{credential}@gitlab.com/PrefectHQ/prefect.git",
+            "--depth",
+            "1",
+        ]
+        assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
+
+    async def test_http_connection_with_token_added_correctly(self, monkeypatch):
+        """Ensure that the repo url is in the format `http://<oauth-key>@gitlab.com/<username>/<repo>.git`."""  # noqa: E501
+
+        class p:
+            returncode = 0
+
+        mock = AsyncMock(return_value=p())
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
+        credential = "XYZ"
+        repo = "http://gitlab.xxx.com/PrefectHQ/prefect.git"
+        g = GitLabRepository(
+            repository=repo,
+            credentials=GitLabCredentials(token=SecretStr(credential)),
+        )
+        await g.get_directory()
+        assert mock.await_count == 1
+        expected_cmd = [
+            "git",
+            "clone",
+            f"http://oauth2:{credential}@gitlab.xxx.com/PrefectHQ/prefect.git",
             "--depth",
             "1",
         ]
