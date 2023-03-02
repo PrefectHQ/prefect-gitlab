@@ -142,7 +142,7 @@ class TestGitLab:
         assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
 
     async def test_ssh_fails_with_credential(self, monkeypatch):
-        """Ensure that credentials cannot be passed in if the URL is not in the HTTPS
+        """Ensure that credentials cannot be passed in if the URL is not in the HTTPS/HTTP
         format.
         """
 
@@ -154,10 +154,10 @@ class TestGitLab:
         credential = "XYZ"
         error_msg = (
             "Credentials can only be used with GitLab repositories "
-            "using the 'HTTPS' format. You must either remove the "
+            "using the 'HTTPS'/'HTTP' format. You must either remove the "
             "credential if you wish to use the 'SSH' format and are not "
             "using a private repository, or you must change the repository "
-            "URL to the 'HTTPS' format."
+            "URL to the 'HTTPS'/'HTTP' format."
         )
         with pytest.raises(InvalidRepositoryURLError, match=error_msg):
             GitLabRepository(
