@@ -9,9 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `get_client` method and `url` field to `GitLabCredentials` - [#9](https://github.com/PrefectHQ/prefect-gitlab/pull/9)
-- allow `http` connection to self-hosted gitlab without https - [#14](https://github.com/PrefectHQ/prefect-gitlab/pull/14)
-
 ### Changed
 
 ### Deprecated
@@ -21,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 ### Security
+
+## 0.1.1
+
+Released March 2nd, 2022.
+
+### Added
+
+- `get_client` method and `url` field to `GitLabCredentials` - [#9](https://github.com/PrefectHQ/prefect-gitlab/pull/9)
+- allow `http` connection to self-hosted gitlab without https - [#14](https://github.com/PrefectHQ/prefect-gitlab/pull/14)
 
 ## 0.1.0
 
