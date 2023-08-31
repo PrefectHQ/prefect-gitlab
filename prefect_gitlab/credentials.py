@@ -32,6 +32,7 @@ class GitLabCredentials(Block):
         name="Personal Access Token",
         default=None,
         description="A GitLab Personal Access Token with read_repository scope.",
+        example="oauth2:my-token",
     )
     url: str = Field(
         default=None, title="URL", description="URL to self-hosted GitLab instances."

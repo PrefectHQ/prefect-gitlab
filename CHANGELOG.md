@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- Add placeholder text to `GitLabCredentials` token field in UI - [#23](
+    https://github.com/PrefectHQ/prefect-gitlab/pull/23/)
 
 ### Changed
 
