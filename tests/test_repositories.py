@@ -6,7 +6,12 @@ from typing import Set, Tuple
 import pytest
 from prefect.exceptions import InvalidRepositoryURLError
 from prefect.testing.utilities import AsyncMock
-from pydantic import SecretStr
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import SecretStr
+else:
+    from pydantic import SecretStr
 
 import prefect_gitlab
 from prefect_gitlab.credentials import GitLabCredentials

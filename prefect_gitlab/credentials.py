@@ -2,7 +2,12 @@
 
 from gitlab import Gitlab
 from prefect.blocks.core import Block
-from pydantic import Field, HttpUrl, SecretStr
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import Field, HttpUrl, SecretStr
+else:
+    from pydantic import Field, HttpUrl, SecretStr
 
 
 class GitLabCredentials(Block):
