@@ -51,7 +51,12 @@ from prefect.exceptions import InvalidRepositoryURLError
 from prefect.filesystems import ReadableDeploymentStorage
 from prefect.utilities.asyncutils import sync_compatible
 from prefect.utilities.processutils import run_process
-from pydantic import Field, HttpUrl, validator
+from pydantic import VERSION as PYDANTIC_VERSION
+
+if PYDANTIC_VERSION.startswith("2."):
+    from pydantic.v1 import Field, HttpUrl, validator
+else:
+    from pydantic import Field, HttpUrl, validator
 
 from prefect_gitlab.credentials import GitLabCredentials
 
