@@ -159,7 +159,8 @@ class GitLabRepository(ReadableDeploymentStorage):
         from_path: Optional[str] = None,
         local_path: Optional[str] = None,
         max_retries: int = 3,
-        retry_delay: int = 5,  # new parameters for retries and delay
+        retry_delay: int = 5,
+        backoff_factor: float = 2.0,
     ) -> None:
         """
         Clones a GitLab project specified in `from_path` to the provided `local_path`;
@@ -171,6 +172,8 @@ class GitLabRepository(ReadableDeploymentStorage):
             local_path: A local path to clone to; defaults to present working directory.
             max_retries: Maximum number of retry attempts (default is 3).
             retry_delay: Delay in seconds between retries (default is 5 seconds).
+            backoff_factor: Multiplier for calculating the exponential backoff.
+            The delay will be `retry_delay * (backoff_factor ** attempt)`.
         """
 
         for attempt in range(max_retries):
@@ -207,11 +210,11 @@ class GitLabRepository(ReadableDeploymentStorage):
             except OSError as e:
                 if attempt < max_retries - 1:
                     # Log the error and retry after delay
+                    retry_delay = retry_delay * (backoff_factor**attempt)
                     print(
                         f"Attempt {attempt + 1} failed,"
                         f"retrying in {retry_delay} seconds..."
                     )
                     await sleep(retry_delay)
                 else:
-                    # If it's the last attempt, raise the exception
                     raise e
