@@ -243,3 +243,37 @@ class TestGitLab:
 
                 assert set(os.listdir(tmp_dst)) == set([sub_dir_name])
                 assert set(os.listdir(Path(tmp_dst) / sub_dir_name)) == child_contents
+
+    @pytest.mark.asyncio
+    async def test_get_directory_retries(self, monkeypatch):
+        max_retries = 3
+        retry_delay = 1  # Keeping it short for the test
+
+        # Create an instance of GitLabRepository
+        gitlab_repo = GitLabRepository(
+            repository="https://gitlab.com/PrefectHQ/prefect.git",
+        )
+
+        class p:
+            returncode = 0
+
+        # Mock the asynchronous call within get_directory that can fail
+        async_call_mock = AsyncMock()
+
+        # Configure the mock to simulate a failure for the first two attempts
+        async_call_mock.side_effect = [
+            OSError("Failed to clone"),
+            OSError("Failed to clone"),
+            None,
+        ]  # Assuming a successful attempt on the third try
+        mock = AsyncMock(return_value=p())
+
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
+
+        # Call the get_directory method
+        await gitlab_repo.get_directory(
+            max_retries=max_retries,
+            retry_delay=retry_delay,
+        )
+
+        # Assert that the asynchronous call was tried the correct number of times

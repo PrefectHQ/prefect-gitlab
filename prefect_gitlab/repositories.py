@@ -42,6 +42,7 @@ Examples:
 """
 import io
 import urllib.parse
+from asyncio import sleep
 from distutils.dir_util import copy_tree
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -154,7 +155,11 @@ class GitLabRepository(ReadableDeploymentStorage):
 
     @sync_compatible
     async def get_directory(
-        self, from_path: Optional[str] = None, local_path: Optional[str] = None
+        self,
+        from_path: Optional[str] = None,
+        local_path: Optional[str] = None,
+        max_retries: int = 3,
+        retry_delay: int = 5,  # new parameters for retries and delay
     ) -> None:
         """
         Clones a GitLab project specified in `from_path` to the provided `local_path`;
@@ -164,28 +169,49 @@ class GitLabRepository(ReadableDeploymentStorage):
             from_path: If provided, interpreted as a subdirectory of the underlying
                 repository that will be copied to the provided local path.
             local_path: A local path to clone to; defaults to present working directory.
+            max_retries: Maximum number of retry attempts (default is 3).
+            retry_delay: Delay in seconds between retries (default is 5 seconds).
         """
-        # CONSTRUCT COMMAND
-        cmd = ["git", "clone", self._create_repo_url()]
-        if self.reference:
-            cmd += ["-b", self.reference]
 
-        # Limit git history
-        cmd += ["--depth", "1"]
+        for attempt in range(max_retries):
+            try:
+                # CONSTRUCT COMMAND
+                cmd = ["git", "clone", self._create_repo_url()]
+                if self.reference:
+                    cmd += ["-b", self.reference]
 
-        # Clone to a temporary directory and move the subdirectory over
-        with TemporaryDirectory(suffix="prefect") as tmp_dir:
-            cmd.append(tmp_dir)
+                # Limit git history
+                cmd += ["--depth", "1"]
 
-            err_stream = io.StringIO()
-            out_stream = io.StringIO()
-            process = await run_process(cmd, stream_output=(out_stream, err_stream))
-            if process.returncode != 0:
-                err_stream.seek(0)
-                raise OSError(f"Failed to pull from remote:\n {err_stream.read()}")
+                # Clone to a temporary directory and move the subdirectory over
+                with TemporaryDirectory(suffix="prefect") as tmp_dir:
+                    cmd.append(tmp_dir)
 
-            content_source, content_destination = self._get_paths(
-                dst_dir=local_path, src_dir=tmp_dir, sub_directory=from_path
-            )
+                    err_stream = io.StringIO()
+                    out_stream = io.StringIO()
+                    process = await run_process(
+                        cmd, stream_output=(out_stream, err_stream)
+                    )
+                    if process.returncode != 0:
+                        err_stream.seek(0)
+                        raise OSError(
+                            f"Failed to pull from remote:\n {err_stream.read()}"
+                        )
 
-            copy_tree(src=content_source, dst=content_destination)
+                    content_source, content_destination = self._get_paths(
+                        dst_dir=local_path, src_dir=tmp_dir, sub_directory=from_path
+                    )
+
+                    copy_tree(src=content_source, dst=content_destination)
+                    break
+            except OSError as e:
+                if attempt < max_retries - 1:
+                    # Log the error and retry after delay
+                    print(
+                        f"Attempt {attempt + 1} failed,"
+                        f"retrying in {retry_delay} seconds..."
+                    )
+                    await sleep(retry_delay)
+                else:
+                    # If it's the last attempt, raise the exception
+                    raise e
