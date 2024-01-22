@@ -15,7 +15,7 @@ else:
 
 import prefect_gitlab
 from prefect_gitlab.credentials import GitLabCredentials
-from prefect_gitlab.repositories import GitLabRepository
+from prefect_gitlab.repositories import GitLabRepository  # noqa: E402
 
 
 class TestGitLab:
@@ -243,3 +243,22 @@ class TestGitLab:
 
                 assert set(os.listdir(tmp_dst)) == set([sub_dir_name])
                 assert set(os.listdir(Path(tmp_dst) / sub_dir_name)) == child_contents
+
+    async def test_get_directory_retries(self, monkeypatch):
+        # Constants for the retry decorator
+        MAX_CLONE_ATTEMPTS = 3
+
+        # Create an instance of GitLabRepository
+        g = GitLabRepository(repository="https://gitlab.com/prefectHQ/prefect.git")
+
+        # Prepare a MagicMock to simulate the process call within get_directory
+        mock = AsyncMock()
+        mock.return_value = AsyncMock(returncode=1)  # Simulate failure
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
+
+        # Call get_directory and expect it to raise a RetryError after maximum attempts
+        with pytest.raises(OSError):
+            await g.get_directory()
+        print(mock.call_count)
+        # Verify that the function retried the expected number of times
+        assert mock.call_count == MAX_CLONE_ATTEMPTS

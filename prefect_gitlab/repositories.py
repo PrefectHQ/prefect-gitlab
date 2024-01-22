@@ -52,6 +52,7 @@ from prefect.filesystems import ReadableDeploymentStorage
 from prefect.utilities.asyncutils import sync_compatible
 from prefect.utilities.processutils import run_process
 from pydantic import VERSION as PYDANTIC_VERSION
+from tenacity import retry, stop_after_attempt, wait_fixed, wait_random
 
 if PYDANTIC_VERSION.startswith("2."):
     from pydantic.v1 import Field, HttpUrl, validator
@@ -59,6 +60,13 @@ else:
     from pydantic import Field, HttpUrl, validator
 
 from prefect_gitlab.credentials import GitLabCredentials
+
+# Create get_directory retry settings
+
+MAX_CLONE_ATTEMPTS = 3
+CLONE_RETRY_MIN_DELAY_SECONDS = 1
+CLONE_RETRY_MIN_DELAY_JITTER_SECONDS = 0
+CLONE_RETRY_MAX_DELAY_JITTER_SECONDS = 3
 
 
 class GitLabRepository(ReadableDeploymentStorage):
@@ -153,6 +161,15 @@ class GitLabRepository(ReadableDeploymentStorage):
         return str(content_source), str(content_destination)
 
     @sync_compatible
+    @retry(
+        stop=stop_after_attempt(MAX_CLONE_ATTEMPTS),
+        wait=wait_fixed(CLONE_RETRY_MIN_DELAY_SECONDS)
+        + wait_random(
+            CLONE_RETRY_MIN_DELAY_JITTER_SECONDS,
+            CLONE_RETRY_MAX_DELAY_JITTER_SECONDS,
+        ),
+        reraise=True,
+    )
     async def get_directory(
         self, from_path: Optional[str] = None, local_path: Optional[str] = None
     ) -> None:
