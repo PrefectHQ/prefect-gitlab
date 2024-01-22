@@ -42,7 +42,6 @@ Examples:
 """
 import io
 import urllib.parse
-from asyncio import sleep
 from distutils.dir_util import copy_tree
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -53,6 +52,7 @@ from prefect.filesystems import ReadableDeploymentStorage
 from prefect.utilities.asyncutils import sync_compatible
 from prefect.utilities.processutils import run_process
 from pydantic import VERSION as PYDANTIC_VERSION
+from tenacity import retry, stop_after_attempt, wait_fixed, wait_random
 
 if PYDANTIC_VERSION.startswith("2."):
     from pydantic.v1 import Field, HttpUrl, validator
@@ -60,6 +60,13 @@ else:
     from pydantic import Field, HttpUrl, validator
 
 from prefect_gitlab.credentials import GitLabCredentials
+
+# Create get_directory retry settings
+
+MAX_CLONE_ATTEMPTS = 3
+CLONE_RETRY_MIN_DELAY_SECONDS = 1
+CLONE_RETRY_MIN_DELAY_JITTER_SECONDS = 0
+CLONE_RETRY_MAX_DELAY_JITTER_SECONDS = 3
 
 
 class GitLabRepository(ReadableDeploymentStorage):
@@ -154,13 +161,17 @@ class GitLabRepository(ReadableDeploymentStorage):
         return str(content_source), str(content_destination)
 
     @sync_compatible
+    @retry(
+        stop=stop_after_attempt(MAX_CLONE_ATTEMPTS),
+        wait=wait_fixed(CLONE_RETRY_MIN_DELAY_SECONDS)
+        + wait_random(
+            CLONE_RETRY_MIN_DELAY_JITTER_SECONDS,
+            CLONE_RETRY_MAX_DELAY_JITTER_SECONDS,
+        ),
+        reraise=True,
+    )
     async def get_directory(
-        self,
-        from_path: Optional[str] = None,
-        local_path: Optional[str] = None,
-        max_retries: int = 3,
-        retry_delay: int = 5,
-        backoff_factor: float = 2.0,
+        self, from_path: Optional[str] = None, local_path: Optional[str] = None
     ) -> None:
         """
         Clones a GitLab project specified in `from_path` to the provided `local_path`;
@@ -170,51 +181,28 @@ class GitLabRepository(ReadableDeploymentStorage):
             from_path: If provided, interpreted as a subdirectory of the underlying
                 repository that will be copied to the provided local path.
             local_path: A local path to clone to; defaults to present working directory.
-            max_retries: Maximum number of retry attempts (default is 3).
-            retry_delay: Delay in seconds between retries (default is 5 seconds).
-            backoff_factor: Multiplier for calculating the exponential backoff.
-            The delay will be `retry_delay * (backoff_factor ** attempt)`.
         """
+        # CONSTRUCT COMMAND
+        cmd = ["git", "clone", self._create_repo_url()]
+        if self.reference:
+            cmd += ["-b", self.reference]
 
-        for attempt in range(max_retries):
-            try:
-                # CONSTRUCT COMMAND
-                cmd = ["git", "clone", self._create_repo_url()]
-                if self.reference:
-                    cmd += ["-b", self.reference]
+        # Limit git history
+        cmd += ["--depth", "1"]
 
-                # Limit git history
-                cmd += ["--depth", "1"]
+        # Clone to a temporary directory and move the subdirectory over
+        with TemporaryDirectory(suffix="prefect") as tmp_dir:
+            cmd.append(tmp_dir)
 
-                # Clone to a temporary directory and move the subdirectory over
-                with TemporaryDirectory(suffix="prefect") as tmp_dir:
-                    cmd.append(tmp_dir)
+            err_stream = io.StringIO()
+            out_stream = io.StringIO()
+            process = await run_process(cmd, stream_output=(out_stream, err_stream))
+            if process.returncode != 0:
+                err_stream.seek(0)
+                raise OSError(f"Failed to pull from remote:\n {err_stream.read()}")
 
-                    err_stream = io.StringIO()
-                    out_stream = io.StringIO()
-                    process = await run_process(
-                        cmd, stream_output=(out_stream, err_stream)
-                    )
-                    if process.returncode != 0:
-                        err_stream.seek(0)
-                        raise OSError(
-                            f"Failed to pull from remote:\n {err_stream.read()}"
-                        )
+            content_source, content_destination = self._get_paths(
+                dst_dir=local_path, src_dir=tmp_dir, sub_directory=from_path
+            )
 
-                    content_source, content_destination = self._get_paths(
-                        dst_dir=local_path, src_dir=tmp_dir, sub_directory=from_path
-                    )
-
-                    copy_tree(src=content_source, dst=content_destination)
-                    break
-            except OSError as e:
-                if attempt < max_retries - 1:
-                    # Log the error and retry after delay
-                    retry_delay = retry_delay * (backoff_factor**attempt)
-                    print(
-                        f"Attempt {attempt + 1} failed,"
-                        f"retrying in {retry_delay} seconds..."
-                    )
-                    await sleep(retry_delay)
-                else:
-                    raise e
+            copy_tree(src=content_source, dst=content_destination)

@@ -15,7 +15,7 @@ else:
 
 import prefect_gitlab
 from prefect_gitlab.credentials import GitLabCredentials
-from prefect_gitlab.repositories import GitLabRepository
+from prefect_gitlab.repositories import GitLabRepository  # noqa: E402
 
 
 class TestGitLab:
@@ -244,36 +244,21 @@ class TestGitLab:
                 assert set(os.listdir(tmp_dst)) == set([sub_dir_name])
                 assert set(os.listdir(Path(tmp_dst) / sub_dir_name)) == child_contents
 
-    @pytest.mark.asyncio
     async def test_get_directory_retries(self, monkeypatch):
-        max_retries = 3
-        retry_delay = 1  # Keeping it short for the test
+        # Constants for the retry decorator
+        MAX_CLONE_ATTEMPTS = 3
 
         # Create an instance of GitLabRepository
-        gitlab_repo = GitLabRepository(
-            repository="https://gitlab.com/PrefectHQ/prefect.git",
-        )
+        g = GitLabRepository(repository="https://gitlab.com/prefectHQ/prefect.git")
 
-        class p:
-            returncode = 0
-
-        # Mock the asynchronous call within get_directory that can fail
-        async_call_mock = AsyncMock()
-
-        # Configure the mock to simulate a failure for the first two attempts
-        async_call_mock.side_effect = [
-            OSError("Failed to clone"),
-            OSError("Failed to clone"),
-            None,
-        ]  # Assuming a successful attempt on the third try
-        mock = AsyncMock(return_value=p())
-
+        # Prepare a MagicMock to simulate the process call within get_directory
+        mock = AsyncMock()
+        mock.return_value = AsyncMock(returncode=1)  # Simulate failure
         monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
 
-        # Call the get_directory method
-        await gitlab_repo.get_directory(
-            max_retries=max_retries,
-            retry_delay=retry_delay,
-        )
-
-        # Assert that the asynchronous call was tried the correct number of times
+        # Call get_directory and expect it to raise a RetryError after maximum attempts
+        with pytest.raises(OSError):
+            await g.get_directory()
+        print(mock.call_count)
+        # Verify that the function retried the expected number of times
+        assert mock.call_count == MAX_CLONE_ATTEMPTS
