@@ -2,18 +2,16 @@
 
 <p align="center">
     <a href="https://pypi.python.org/pypi/prefect-gitlab/" alt="PyPI version">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-gitlab?color=0052FF&labelColor=090422"></a>
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefect-gitlab?color=26272B&labelColor=090422"></a>
     <a href="https://github.com/prefecthq/prefect-gitlab/" alt="Stars">
-        <img src="https://img.shields.io/github/stars/prefecthq/prefect-gitlab?color=0052FF&labelColor=090422" /></a>
+        <img src="https://img.shields.io/github/stars/prefecthq/prefect-gitlab?color=26272B&labelColor=090422" /></a>
     <a href="https://pepy.tech/badge/prefect-gitlab/" alt="Downloads">
-        <img src="https://img.shields.io/pypi/dm/prefect-gitlab?color=0052FF&labelColor=090422" /></a>
+        <img src="https://img.shields.io/pypi/dm/prefect-gitlab?color=26272B&labelColor=090422" /></a>
     <a href="https://github.com/prefecthq/prefect-gitlab/pulse" alt="Activity">
-        <img src="https://img.shields.io/github/commit-activity/m/prefecthq/prefect-gitlab?color=0052FF&labelColor=090422" /></a>
+        <img src="https://img.shields.io/github/commit-activity/m/prefecthq/prefect-gitlab?color=26272B&labelColor=090422" /></a>
     <br>
     <a href="https://prefect-community.slack.com" alt="Slack">
-        <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=0052FF&labelColor=090422&logo=slack" /></a>
-    <a href="https://discourse.prefect.io/" alt="Discourse">
-        <img src="https://img.shields.io/badge/discourse-browse_forum-red.svg?color=0052FF&labelColor=090422&logo=discourse" /></a>
+        <img src="https://img.shields.io/badge/slack-join_community-red.svg?color=26272B&labelColor=090422&logo=slack" /></a>
 </p>
 
 ## Welcome!
@@ -24,11 +22,11 @@
 
 ### Python setup
 
-Requires an installation of Python 3.7+.
+Requires an installation of Python 3.8 or higher.
 
-We recommend using a Python virtual environment manager such as pipenv, conda or virtualenv.
+We recommend using a Python virtual environment manager such as pipenv, conda, or virtualenv.
 
-This collection is designed to work with Prefect 2.3.0 or higher. For more information about how to use Prefect, please refer to the [Prefect documentation](https://orion-docs.prefect.io/).
+This integration is designed to work with Prefect 2.3.0 or higher. For more information about how to use Prefect, please refer to the [Prefect documentation](https://docs.prefect.io/).
 
 ### Installation
 
@@ -38,13 +36,13 @@ Install `prefect-gitlab` with `pip`:
 pip install prefect-gitlab
 ```
 
-Then, register to [view the storage block](https://orion-docs.prefect.io/ui/blocks/) on Prefect Cloud:
+Then, register the [block types](https://docs.prefect.io/concepts/blocks/)) in this integration to view the storage block type on Prefect Cloud:
 
 ```bash
 prefect block register -m prefect_gitlab
 ```
 
-Note, to use the `load` method on Blocks, you must already have a block document [saved through code](https://orion-docs.prefect.io/concepts/blocks/#saving-blocks) or [saved through the UI](https://orion-docs.prefect.io/ui/blocks/).
+Note, to use the `load` method on a block, you must already have a block document [saved](https://docs.prefect.io/concepts/blocks/).
 
 ## Creating a GitLab storage block
 
@@ -97,9 +95,9 @@ Finally, enter your repository information in the form and click **Create**:
 
 If you encounter any bugs while using `prefect-gitlab`, feel free to open an issue in the [prefect-gitlab](https://github.com/prefecthq/prefect-gitlab) repository.
 
-If you have any questions or issues while using `prefect-gitlab`, you can find help in either the [Prefect Discourse forum](https://discourse.prefect.io/) or the [Prefect Slack community](https://prefect.io/slack).
+If you have any questions or issues while using `prefect-gitlab`, you can find help in the [Prefect Slack community](https://prefect.io/slack).
 
-Feel free to ⭐️ or watch [`prefect-gitlab`](https://github.com/prefecthq/prefect-gitlab) for updates too!
+Feel free to ⭐️ or watch [`prefect-gitlab`](https://github.com/prefecthq/prefect-gitlab) for updates!
 
 ## Development
 
