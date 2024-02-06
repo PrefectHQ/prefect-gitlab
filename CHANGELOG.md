@@ -21,6 +21,16 @@ Updated branding and README links
 
 ### Security
 
+## 0.2.2
+
+Released February 6th, 2024.
+
+### Added
+- Add retries to `get_directory` - [#34](https://github.com/PrefectHQ/prefect-gitlab/pull/34)
+
+### Changed
+- Updated branding and README - [#35](https://github.com/PrefectHQ/prefect-gitlab/pull/35)
+
 ## 0.1.1
 
 Released March 2nd, 2022.
