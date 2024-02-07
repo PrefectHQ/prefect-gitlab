@@ -23,7 +23,7 @@ Updated branding and README links
 
 ## 0.2.2
 
-Released February 6th, 2024.
+Released February 7th, 2024.
 
 ### Added
 - Add retries to `get_directory` - [#34](https://github.com/PrefectHQ/prefect-gitlab/pull/34)
