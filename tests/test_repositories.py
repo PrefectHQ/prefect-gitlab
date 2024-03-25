@@ -146,6 +146,29 @@ class TestGitLab:
         ]
         assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
 
+    async def test_cloning_with_custom_depth(self, monkeypatch):
+        """Ensure that we can retrieve the whole history, i.e. support true git clone"""  # noqa: E501
+
+        class p:
+            returncode = 0
+
+        mock = AsyncMock(return_value=p())
+        monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
+        repo = "git@gitlab.com:PrefectHQ/prefect.git"
+        depth = 0
+        g = GitLabRepository(
+            repository=repo,
+            git_depth=depth,
+        )
+        await g.get_directory()
+        assert mock.await_count == 1
+        expected_cmd = [
+            "git",
+            "clone",
+            repo,
+        ]
+        assert mock.await_args[0][0][: len(expected_cmd)] == expected_cmd
+
     async def test_ssh_fails_with_credential(self, monkeypatch):
         """Ensure that credentials cannot be passed in if the URL is not in the HTTPS/HTTP
         format.
