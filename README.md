@@ -63,12 +63,22 @@ public_gitlab_block.save()
 # specific branch or tag of a GitLab repository
 branch_gitlab_block = GitLabRepository(
     name="my-gitlab-block",
-    reference="branch-or-tag-name"
+    reference="branch-or-tag-name",
     repository="https://gitlab.com/testing/my-repository.git"
 )
 
 branch_gitlab_block.save()
 
+
+# Cloning (get all history) of a specific branch or tag of a GitLab repository
+branch_gitlab_block = GitLabRepository(
+    name="my-gitlab-block",
+    reference="branch-or-tag-name",
+    git_depth=0,
+    repository="https://gitlab.com/testing/my-repository.git"
+)
+
+branch_gitlab_block.save()
 
 # private GitLab repository
 private_gitlab_block = GitLabRepository(
