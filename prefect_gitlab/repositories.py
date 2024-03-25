@@ -96,8 +96,9 @@ class GitLabRepository(ReadableDeploymentStorage):
     )
     git_depth: Optional[int] = Field(
         default=1,
+        gte=1,
         description="The number of commits that Git history is truncated to "
-        "during cloning. Use 0 to disable i.e. get all history.",
+        "during cloning. Set to None to fetch the entire history.",
     )
     credentials: Optional[GitLabCredentials] = Field(
         default=None,
