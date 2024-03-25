@@ -96,8 +96,8 @@ class GitLabRepository(ReadableDeploymentStorage):
     )
     git_depth: Optional[int] = Field(
         default=1,
-        description="The number of commits that Git history is truncated to during cloning."
-        " Use 0 to disable i.e. get all history.",
+        description="The number of commits that Git history is truncated to "
+        "during cloning. Use 0 to disable i.e. get all history.",
     )
     credentials: Optional[GitLabCredentials] = Field(
         default=None,
@@ -195,7 +195,7 @@ class GitLabRepository(ReadableDeploymentStorage):
         # Limit git history
         if self.git_depth > 0:
             cmd += ["--depth", f"{self.git_depth}"]
-        
+
         # Clone to a temporary directory and move the subdirectory over
         with TemporaryDirectory(suffix="prefect") as tmp_dir:
             cmd.append(tmp_dir)
