@@ -194,7 +194,7 @@ class GitLabRepository(ReadableDeploymentStorage):
             cmd += ["-b", self.reference]
 
         # Limit git history
-        if self.git_depth > 0:
+        if self.git_depth is not None:
             cmd += ["--depth", f"{self.git_depth}"]
 
         # Clone to a temporary directory and move the subdirectory over
