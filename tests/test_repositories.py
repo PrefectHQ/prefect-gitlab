@@ -155,7 +155,7 @@ class TestGitLab:
         mock = AsyncMock(return_value=p())
         monkeypatch.setattr(prefect_gitlab.repositories, "run_process", mock)
         repo = "git@gitlab.com:PrefectHQ/prefect.git"
-        depth = 0
+        depth = None
         g = GitLabRepository(
             repository=repo,
             git_depth=depth,
