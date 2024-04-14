@@ -70,11 +70,11 @@ branch_gitlab_block = GitLabRepository(
 branch_gitlab_block.save()
 
 
-# Cloning (get all history) of a specific branch or tag of a GitLab repository
+# Get all history of a specific branch or tag of a GitLab repository
 branch_gitlab_block = GitLabRepository(
     name="my-gitlab-block",
     reference="branch-or-tag-name",
-    git_depth=0,
+    git_depth=None,
     repository="https://gitlab.com/testing/my-repository.git"
 )
 
